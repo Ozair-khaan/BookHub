@@ -1,13 +1,12 @@
 package com.bookHub.repo;
 
-import com.bookHub.model.Book;
+import com.bookHub.entity.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
-
 @Repository
-public class BookRepository {
-    private Map<Long, Book> bookStore = new HashMap<>();
+public interface BookRepository extends JpaRepository<Book, Long> {
+   /* private Map<Long, Book> bookStore = new HashMap<>();
     private Long counter = 1L;
 
     public List<Book> findAll() {
@@ -28,5 +27,5 @@ public class BookRepository {
 
     public void deleteById(Long id) {
         bookStore.remove(id);
-    }
+    }*/
 }
