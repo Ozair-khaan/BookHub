@@ -1,4 +1,4 @@
-package com.student;
+package com.bookHub;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
