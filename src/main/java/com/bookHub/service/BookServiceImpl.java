@@ -1,6 +1,7 @@
 package com.bookHub.service;
 
 import com.bookHub.entity.Book;
+import com.bookHub.exception.BookNotFoundException;
 import com.bookHub.repo.BookRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+        return Optional.ofNullable(bookRepository.findById(id).orElseThrow(()->new BookNotFoundException("Book not found with id : "+id)));
     }
 
     @Override
@@ -32,18 +33,18 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Optional<Book> updateBook(Long id, Book bookDetails) {
-        return bookRepository.findById(id).map(book -> {
+        return Optional.ofNullable(bookRepository.findById(id)
+                .map(book -> {
             book.setTitle(bookDetails.getTitle());
             book.setAuthor(bookDetails.getAuthor());
             return bookRepository.save(book);
-        });
+        }).orElseThrow(()->new BookNotFoundException("Cannot update. Book not found with id: "+id)));
     }
 
     @Override
     public boolean deleteBook(Long id) {
-        return bookRepository.findById(id).map(book -> {
-            bookRepository.delete(book);
-            return true;
-        }).orElse(false);
+         Book book = bookRepository.findById(id).orElseThrow(() ->new BookNotFoundException("Cannot delete. Book not found with id : "+id));
+         bookRepository.delete(book);
+         return true;
     }
 }
