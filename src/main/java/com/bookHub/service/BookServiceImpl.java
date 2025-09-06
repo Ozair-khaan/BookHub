@@ -3,6 +3,9 @@ package com.bookHub.service;
 import com.bookHub.entity.Book;
 import com.bookHub.exception.BookNotFoundException;
 import com.bookHub.repo.BookRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +25,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Cacheable(value = "books", key = "#id")
     public Optional<Book> getBookById(Long id) {
-        return Optional.ofNullable(bookRepository.findById(id).orElseThrow(()->new BookNotFoundException("Book not found with id : "+id)));
+        return Optional.ofNullable(bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id : " + id)));
     }
 
     @Override
@@ -32,19 +36,21 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @CachePut(value = "books", key = "#id")
     public Optional<Book> updateBook(Long id, Book bookDetails) {
         return Optional.ofNullable(bookRepository.findById(id)
                 .map(book -> {
-            book.setTitle(bookDetails.getTitle());
-            book.setAuthor(bookDetails.getAuthor());
-            return bookRepository.save(book);
-        }).orElseThrow(()->new BookNotFoundException("Cannot update. Book not found with id: "+id)));
+                    book.setTitle(bookDetails.getTitle());
+                    book.setAuthor(bookDetails.getAuthor());
+                    return bookRepository.save(book);
+                }).orElseThrow(() -> new BookNotFoundException("Cannot update. Book not found with id: " + id)));
     }
 
     @Override
+    @CacheEvict(value = "books", key = "#id")
     public boolean deleteBook(Long id) {
-         Book book = bookRepository.findById(id).orElseThrow(() ->new BookNotFoundException("Cannot delete. Book not found with id : "+id));
-         bookRepository.delete(book);
-         return true;
+        Book book = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Cannot delete. Book not found with id : " + id));
+        bookRepository.delete(book);
+        return true;
     }
 }
